@@ -1,3 +1,4 @@
+# iOS 自动打包脚本（无语法错误版）
 name: Build iOS IPA
 
 # 触发条件：当你推送到 main 分支时自动运行
@@ -7,37 +8,61 @@ on:
 
 jobs:
   build:
-    # 使用 macOS 环境编译 Xcode 项目
+    # 使用 macOS 系统编译 Xcode 项目
     runs-on: macos-latest
     steps:
-      - name: 拉取代码
+      # 1. 拉取你的代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 配置 Xcode 版本（这里用最新稳定版）
-        run: echo "DEVELOPER_DIR=/Applications/Xcode_15.4.app/Contents/Developer" >> $GITHUB_ENV
-
-      - name: 编译并归档项目
+      # 2. 编译并归档项目（这里要改你的项目信息）
+      - name: Build and archive
         run: |
-          # 注意：把这里的 你的项目名.xcodeproj 和 你的Scheme名 改成你自己的
-          xcodebuild -project 你的项目名.xcodeproj \
+          # --------------------------
+          # 👉 请把下面这两行改成你自己的！
+          # 1. 把 "你的项目名.xcodeproj" 改成你仓库里的项目文件（.xcodeproj 或 .xcworkspace）
+          # 2. 把 "你的Scheme名" 改成你Xcode里的Scheme名称（一般和项目名一样）
+          # --------------------------
+          xcodebuild archive \
+            -project 你的项目名.xcodeproj \
             -scheme "你的Scheme名" \
             -configuration Release \
-            clean archive \
-            -archivePath build/App.xcarchive
+            -archivePath build/App.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      - name: 导出 IPA 安装包
+      # 3. 创建导出配置文件（自动生成，不用改）
+      - name: Create ExportOptions.plist
         run: |
-          # 注意：如果你的项目用了 .xcworkspace，需要改成对应的导出配置
+          cat > ExportOptions.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>development</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>compileBitcode</key>
+    <false/>
+</dict>
+</plist>
+EOF
+
+      # 4. 从归档文件导出IPA（不用改）
+      - name: Export IPA
+        run: |
           xcodebuild -exportArchive \
             -archivePath build/App.xcarchive \
             -exportPath build/IPA \
             -exportOptionsPlist ExportOptions.plist
 
-      - name: 上传 IPA 到构建产物
+      # 5. 把IPA上传到GitHub，方便你下载（不用改）
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-App-IPA
-          path: build/IPA/*.ipaname: Build iOS IPA
+          name: iOS-IPA
+          path: build/IPA/*.ipa# iOS 自动打包脚本（无语法错误版）
+name: Build iOS IPA
 
 # 触发条件：当你推送到 main 分支时自动运行
 on:
@@ -46,34 +71,57 @@ on:
 
 jobs:
   build:
-    # 使用 macOS 环境编译 Xcode 项目
+    # 使用 macOS 系统编译 Xcode 项目
     runs-on: macos-latest
     steps:
-      - name: 拉取代码
+      # 1. 拉取你的代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 配置 Xcode 版本（这里用最新稳定版）
-        run: echo "DEVELOPER_DIR=/Applications/Xcode_15.4.app/Contents/Developer" >> $GITHUB_ENV
-
-      - name: 编译并归档项目
+      # 2. 编译并归档项目（这里要改你的项目信息）
+      - name: Build and archive
         run: |
-          # 注意：把这里的 你的项目名.xcodeproj 和 你的Scheme名 改成你自己的
-          xcodebuild -project app.xcodeproj \
-            -scheme "across" \
+          # --------------------------
+          # 👉 请把下面这两行改成你自己的！
+          # 1. 把 "你的项目名.xcodeproj" 改成你仓库里的项目文件（.xcodeproj 或 .xcworkspace）
+          # 2. 把 "你的Scheme名" 改成你Xcode里的Scheme名称（一般和项目名一样）
+          # --------------------------
+          xcodebuild archive \
+            -project 你的项目名.xcodeproj \
+            -scheme "你的Scheme名" \
             -configuration Release \
-            clean archive \
-            -archivePath build/App.xcarchive
+            -archivePath build/App.xcarchive \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
-      - name: 导出 IPA 安装包
+      # 3. 创建导出配置文件（自动生成，不用改）
+      - name: Create ExportOptions.plist
         run: |
-          # 注意：如果你的项目用了 .xcworkspace，需要改成对应的导出配置
+          cat > ExportOptions.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>method</key>
+    <string>development</string>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>compileBitcode</key>
+    <false/>
+</dict>
+</plist>
+EOF
+
+      # 4. 从归档文件导出IPA（不用改）
+      - name: Export IPA
+        run: |
           xcodebuild -exportArchive \
             -archivePath build/App.xcarchive \
             -exportPath build/IPA \
             -exportOptionsPlist ExportOptions.plist
 
-      - name: 上传 IPA 到构建产物
+      # 5. 把IPA上传到GitHub，方便你下载（不用改）
+      - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iOS-App-IPA
+          name: iOS-IPA
           path: build/IPA/*.ipa
